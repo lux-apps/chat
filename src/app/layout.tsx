@@ -1,34 +1,35 @@
 import React, { type PropsWithChildren } from 'react'
-import { headers } from 'next/headers'
+import type { Viewport, Metadata } from 'next'
 
-import {
-  RootLayout as RootLayoutCore,
-  viewport as ViewportCode,
-} from '@luxfi/ui/root-layout'
-
-import { ThemeProvider } from '@/components/theme-provider'
-import { Sidebar } from '@/components/sidebar'
+import { Toaster } from '@hanzo/ui/primitives'
+import { Header } from '@luxfi/ui'
 
 import siteDef from '../site-def'
 import _metadata from '../metadata'
 
-export const metadata = { ..._metadata }
-export const viewport = { ...ViewportCode }
+import '@luxfi/ui/style/lux-global.css'
 
-const RootLayout: React.FC<PropsWithChildren> = async ({
-  children
-}) => {
-  const headersList = headers()
-  const isIframe = headersList.get("x-pathname") === '/iframe'
-  return (
-    <RootLayoutCore siteDef={siteDef} showHeader={!isIframe}>
-      <ThemeProvider>
-        {children}
-        <Sidebar />
-      </ThemeProvider>
-    </RootLayoutCore>
-  )
+export const metadata: Metadata = { ..._metadata }
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
 }
 
-export default RootLayout
+const bodyClasses = 'bg-background text-foreground flex flex-col min-h-full font-sans'
 
+export default function RootLayout({ children }: PropsWithChildren) {
+  return (
+    <html lang='en' className='dark'>
+      <body className={bodyClasses}>
+        <Header siteDef={siteDef} />
+        <main className='flex flex-col grow'>
+          {children}
+        </main>
+        <Toaster />
+      </body>
+    </html>
+  )
+}
